@@ -1,0 +1,68 @@
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+odc_debug.log
+
+# Dependency directories
+node_modules/
+frontend/node_modules/
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Frontend builds
+frontend/build/
+frontend/dist/
+.next/
+out/
+
+# Python / Django
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+backend/db.sqlite3
+backend/media/
+backend/staticfiles/
+celerybeat-schedule
+*.pid
+
+# Environments and Secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+backend/.env
+frontend/.env
+
+# IDE / Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+*~
+
+# Misc
+DCR/
+coverage/
+*.lcov
+.nyc_output/

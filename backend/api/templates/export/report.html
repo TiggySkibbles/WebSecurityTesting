@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ report.project_name }} - WSTG Report</title>
+    <style>
+        body { font-family: -apple-system, system-ui, sans-serif; max-width: 1000px; margin: 0 auto; padding: 2rem; color: #24292f; }
+        h1, h2, h3 { color: #0969da; }
+        .header { border-bottom: 2px solid #e1e4e8; margin-bottom: 2rem; padding-bottom: 1rem; }
+        .category { margin-bottom: 2rem; }
+        details { background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 6px; margin-bottom: 0.5rem; padding: 0.5rem 1rem; }
+        summary { font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: space-between;}
+        .test-content { padding-top: 1rem; border-top: 1px solid #e1e4e8; margin-top: 1rem; }
+        .status { padding: 0.25rem 0.5rem; border-radius: 20px; font-size: 0.8em; font-weight: bold; }
+        .pass { background: #dcffe4; color: #1a7f37; }
+        .fail { background: #ffebe9; color: #cf222e; }
+        .na { background: #eaeef2; color: #57606a; }
+        .not_started { background: #fff8c5; color: #9a6700; }
+        .notes { white-space: pre-wrap; font-family: monospace; background: white; padding: 1rem; border: 1px solid #e1e4e8; border-radius: 4px;}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Web Application Test Report</h1>
+        <p style="font-size: 1.5rem; margin-top: 0.5rem; color: #57606a;">{{ report.project_name }}</p>
+        <p><strong>Assessor:</strong> {{ report.user_name }}</p>
+        <p><strong>Date Exported:</strong> {{ report.export_date }}</p>
+        <p><strong>Target:</strong> {{ report.target_url }}</p>
+    </div>
+
+    <div class="summary-section" style="margin-bottom: 3rem;">
+        <h2>Executive Summary</h2>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 1rem; background: white; border: 1px solid #d0d7de; border-radius: 6px; overflow: hidden;">
+            <thead>
+                <tr style="background: #f6f8fa; border-bottom: 1px solid #d0d7de;">
+                    <th style="padding: 12px; text-align: left; border-right: 1px solid #d0d7de;">Section</th>
+                    <th style="padding: 12px; text-align: center; border-right: 1px solid #d0d7de; color: #1a7f37;">Pass</th>
+                    <th style="padding: 12px; text-align: center; border-right: 1px solid #d0d7de; color: #cf222e;">Fail</th>
+                    <th style="padding: 12px; text-align: center;">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in report.summary %}
+                <tr style="border-bottom: 1px solid #ebf0f4;">
+                    <td style="padding: 10px 12px; border-right: 1px solid #d0d7de;"><strong>{{ item.section }}</strong></td>
+                    <td style="padding: 10px 12px; text-align: center; border-right: 1px solid #d0d7de;">{{ item.pass }}</td>
+                    <td style="padding: 10px 12px; text-align: center; border-right: 1px solid #d0d7de;">{{ item.fail }}</td>
+                    <td style="padding: 10px 12px; text-align: center;">{{ item.total }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% for cat in report.categories %}
+    <div class="category">
+        <h2>{{ cat.category }} ({{ cat.ref_id }})</h2>
+        {% for test in cat.tests %}
+        <details>
+            <summary>
+                <span>{{ test.ref_id }}: {{ test.name }}</span>
+                <span class="status {{ test.status|lower }}">{{ test.status }}</span>
+            </summary>
+                <h4>Notes/Findings:</h4>
+                {% if test.notes %}
+                    <div class="notes">{{ test.notes }}</div>
+                {% else %}
+                    <p><em>No notes provided.</em></p>
+                {% endif %}
+
+                {% if test.evidence %}
+                <h4 style="margin-top: 1rem;">Evidence:</h4>
+                <ul style="list-style-type: none; padding-left: 0;">
+                    {% for ev in test.evidence %}
+                    <li style="margin-bottom: 0.5rem; padding: 0.5rem; background: #fff; border: 1px solid #e1e4e8; border-radius: 4px;">
+                        <strong>{{ ev.description }}:</strong> <code style="color: #6e7781;">{{ ev.zip_path }}</code>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+        </details>
+        {% endfor %}
+    </div>
+    {% endfor %}
+</body>
+</html>
