@@ -19,9 +19,18 @@ Before setting up the project, ensure you have the following installed:
 
 ## Configuration & Setup
 
-### 1. Backend Setup
+### 1. Environment Setup
 
-The backend requires environment variables to securely handle configuration. 
+An automated setup script is provided to generate secure initial `.env` files for both the frontend and backend. 
+
+Run the environment setup script from the root of the project:
+```bash
+python setup_env.py
+```
+
+Note: If you are uncomfortable using the automated script, you can manually create the .env files by copying the .env.example files to .env and filling in the values.
+
+### 2. Backend Setup
 
 Navigate to the backend directory:
 ```bash
@@ -41,23 +50,6 @@ source .venv/bin/activate
 Install the dependencies:
 ```bash
 pip install -r requirements.txt
-```
-
-Create a `.env` file in the `backend/` directory with the following variables:
-```ini
-# backend/.env
-
-# Security Settings
-# Generate a secure key for production!
-SECRET_KEY=your-super-secret-django-key-change-this
-DEBUG=True
-ALLOWED_HOSTS=localhost,127.0.0.1
-
-# Cookie Settings (Set to True in Production with HTTPS)
-SECURE_COOKIES=False
-
-# CORS Origins
-CORS_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
 ```
 
 Apply database migrations:
@@ -82,11 +74,7 @@ Install the Node dependencies:
 npm install
 ```
 
-*(Optional)* The frontend will automatically route requests to `http://localhost:8000/api/` by default. If your backend is hosted elsewhere, you can configure the API URL by creating a `.env` file in the `frontend/` directory:
-```ini
-# frontend/.env
-VITE_API_URL=http://your-custom-backend.com/api/
-```
+The `setup_env.py` script automatically configures the frontend to route API requests to `http://localhost:8000/api/` locally. If your backend is hosted elsewhere, edit the `frontend/.env` file to update your `VITE_API_URL`.
 
 ## Running the Application
 
@@ -124,4 +112,4 @@ The application will be available at:
 
 ## Vulnerability Scanning / Dependency Check
 
-If you are using the OWASP Dependency-Check tool, you can execute the `start_dc.bat` script. Be sure to edit the file to point to your local installation paths and provide your NVD API key either as an environment variable or directly in the script before running.
+A `dependency-check-suppression.xml` file is included in the root directory. If you perform software composition analysis (SCA) on this project using the OWASP Dependency-Check tool, be sure to reference this suppression file to ignore known false positives.
