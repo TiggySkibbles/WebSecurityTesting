@@ -1,0 +1,11 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./frontend/static:/app/frontend_static
+    environment:
+      - DEBUG=True
+      - SECRET_KEY=dev-secret-key-change-in-production

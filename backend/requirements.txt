@@ -18,3 +18,5 @@ tzdata==2025.3
 xhtml2pdf>=0.2.11
 webencodings==0.5.1
 zopfli==0.4.1
+gunicorn==21.2.0
+whitenoise==6.6.0

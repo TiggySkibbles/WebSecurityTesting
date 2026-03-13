@@ -78,9 +78,28 @@ The `setup_env.py` script automatically configures the frontend to route API req
 
 ## Running the Application
 
+### Docker Quickstart (Recommended)
+
+The easiest way to run the entire application stack is using Docker Compose. Ensure you have Docker Desktop (Windows/Mac) or Docker Engine and Compose installed.
+
+From the root directory, simply run:
+```bash
+docker compose up -d --build
+```
+
+The application will be available at:
+- **Frontend App**: http://localhost
+- **Backend API**: http://localhost:8000/api/
+- **Admin Panel**: http://localhost:8000/admin/
+
+To stop the containers:
+```bash
+docker compose down
+```
+
 ### Local Quickstart
 
-You can launch both the frontend and backend servers simultaneously using the provided startup script in the root directory:
+If you prefer to run the application natively on your system, you can launch both the frontend and backend servers simultaneously using the provided startup script in the root directory:
 
 **Windows:**
 ```bat

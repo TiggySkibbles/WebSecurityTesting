@@ -54,6 +54,13 @@ p {
   color: var(--text-secondary);
   margin-bottom: 1rem;
 }
+a {
+  color: var(--accent-primary);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
 
 /* Base Layout */
 .app-container {
@@ -82,6 +89,7 @@ p {
   transition: all 0.2s ease;
   border: 1px solid transparent;
   gap: 0.5rem;
+  font-family: var(--font-family);
 }
 .btn:disabled {
   opacity: 0.6;
@@ -111,6 +119,10 @@ p {
   border-color: var(--accent-danger);
 }
 
+.btn-block {
+  width: 100%;
+}
+
 /* Forms */
 .form-group {
   margin-bottom: 1.5rem;
@@ -132,10 +144,15 @@ p {
   color: var(--text-primary);
   font-family: var(--font-family);
   transition: border-color 0.2s ease;
+  font-size: 0.875rem;
 }
 .form-input:focus {
   outline: none;
   border-color: var(--accent-primary);
+}
+.form-input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.6;
 }
 .form-select {
   appearance: none;
@@ -166,6 +183,92 @@ p {
 .badge-na { background: rgba(132, 141, 151, 0.15); color: var(--text-secondary); border: 1px solid rgba(132, 141, 151, 0.4); }
 .badge-not_started { background: rgba(227, 179, 65, 0.15); color: #d29922; border: 1px solid rgba(210, 153, 34, 0.4); }
 
+/* Login / Register Pages */
+.login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+}
+.login-card {
+  max-width: 450px;
+  width: 100%;
+  padding: 2rem;
+}
+.login-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.login-header h1, .login-header h2 {
+  margin-bottom: 0.5rem;
+}
+.login-header p {
+  color: var(--text-secondary);
+  margin-bottom: 0;
+}
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+.login-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+}
+.login-footer p {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+.error-banner {
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  background-color: rgba(255, 123, 114, 0.1);
+  color: #ff7b72;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 123, 114, 0.2);
+  text-align: center;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Loading Spinner */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+/* SVG Icons inline */
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.icon svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 /* Animations */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
@@ -173,4 +276,11 @@ p {
 }
 .animate-enter {
   animation: fadeIn 0.4s ease forwards;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .main-content {
+    padding: 1rem;
+  }
 }
