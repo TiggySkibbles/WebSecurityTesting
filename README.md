@@ -4,31 +4,32 @@ The OWASP Web Security Testing Guide (WSTG) Platform is a collaborative project 
 
 ## Architecture
 
-This application uses a decoupled architecture with a Django backend providing a RESTful API, and a React frontend built with Vite.
+This application uses a single-origin architecture. Django serves both the RESTful API and the vanilla JavaScript frontend as static files — no build step, no bundler, no npm required.
 
 - **Backend**: Django & Django REST Framework (Python)
-- **Frontend**: React & Vite (JavaScript)
-- **Database**: SQLite (Default) 
+- **Frontend**: Vanilla JavaScript SPA (no framework, no build step)
+- **Static Files**: Served via WhiteNoise
+- **Database**: SQLite (Default)
 
 ## Prerequisites
 
 Before setting up the project, ensure you have the following installed:
 - Python 3.10+
-- Node.js 18+
-- npm (Node Package Manager)
+
+> **Note:** Node.js and npm are **not required**. The frontend is pure vanilla JS served directly by Django.
 
 ## Configuration & Setup
 
 ### 1. Environment Setup
 
-An automated setup script is provided to generate secure initial `.env` files for both the frontend and backend. 
+An automated setup script is provided to generate secure initial `.env` files for the backend.
 
 Run the environment setup script from the root of the project:
 ```bash
 python setup_env.py
 ```
 
-Note: If you are uncomfortable using the automated script, you can manually create the .env files by copying the .env.example files to .env and filling in the values.
+Note: If you are uncomfortable using the automated script, you can manually create the `.env` files by copying the `.env.example` files to `.env` and filling in the values.
 
 ### 2. Backend Setup
 
@@ -57,30 +58,45 @@ Apply database migrations:
 python manage.py migrate
 ```
 
+Collect static files (frontend assets + Django admin):
+```bash
+python manage.py collectstatic --noinput
+```
+
 (Optional) Create a superuser account for the admin panel:
 ```bash
 python manage.py createsuperuser
 ```
 
-### 2. Frontend Setup
-
-Navigate to the frontend directory:
-```bash
-cd frontend
-```
-
-Install the Node dependencies:
-```bash
-npm install
-```
-
-The `setup_env.py` script automatically configures the frontend to route API requests to `http://localhost:8000/api/` locally. If your backend is hosted elsewhere, edit the `frontend/.env` file to update your `VITE_API_URL`.
-
 ## Running the Application
 
-### Docker Quickstart (Recommended)
+### Local Quickstart (Recommended)
 
-The easiest way to run the entire application stack is using Docker Compose. Ensure you have Docker Desktop (Windows/Mac) or Docker Engine and Compose installed.
+If you prefer to run the application natively on your system, use the provided startup script in the root directory:
+
+**Windows:**
+```bat
+start_app.bat
+```
+This script collects static files and starts the Django server. You can stop it by pressing `Ctrl+C`.
+
+### Manual Startup
+
+```bash
+cd backend
+.\.venv\Scripts\activate
+python manage.py collectstatic --noinput
+python manage.py runserver
+```
+
+The application will be available at:
+- **Application**: http://localhost:8000
+- **API**: http://localhost:8000/api/
+- **Admin Panel**: http://localhost:8000/admin/
+
+### Docker Quickstart (Untested)
+
+Ensure you have Docker Desktop (Windows/Mac) or Docker Engine and Compose installed.
 
 From the root directory, simply run:
 ```bash
@@ -88,8 +104,8 @@ docker compose up -d --build
 ```
 
 The application will be available at:
-- **Frontend App**: http://localhost
-- **Backend API**: http://localhost:8000/api/
+- **Application**: http://localhost:8000
+- **API**: http://localhost:8000/api/
 - **Admin Panel**: http://localhost:8000/admin/
 
 To stop the containers:
@@ -97,38 +113,37 @@ To stop the containers:
 docker compose down
 ```
 
-### Local Quickstart
+## Project Structure
 
-If you prefer to run the application natively on your system, you can launch both the frontend and backend servers simultaneously using the provided startup script in the root directory:
-
-**Windows:**
-```bat
-start_app.bat
 ```
-This script will start both servers in the background within the same terminal window. You can stop both by pressing `Ctrl+C`.
-
-### Manual Startup
-
-If you prefer to run them separately:
-
-**Backend:**
-```bash
-cd backend
-.\.venv\Scripts\activate
-python manage.py runserver
+wstg_webapp/
+├── backend/                  # Django backend
+│   ├── api/                  # REST API app
+│   ├── wstg_backend/         # Django project settings
+│   ├── requirements.txt
+│   └── manage.py
+├── frontend/
+│   └── static/               # Vanilla JS frontend (served by Django)
+│       ├── index.html         # SPA entry point
+│       ├── css/style.css      # Application styles
+│       ├── js/
+│       │   ├── app.js         # Router & auth state
+│       │   ├── api.js         # fetch()-based API client
+│       │   ├── utils.js       # DOM helpers, SVG icons
+│       │   ├── pages/         # Page modules
+│       │   └── components/    # Reusable component modules
+│       └── vendor/
+│           └── purify.min.js  # DOMPurify 3.3.3 (vendored)
+├── frontend-old/             # Archived React/Vite frontend (reference only)
+├── start_app.bat             # Windows startup script
+├── docker-compose.yml
+└── setup_env.py
 ```
 
-**Frontend:**
-```bash
-cd frontend
-npm run dev
-```
+## Security
 
-The application will be available at:
-- **Frontend App**: http://localhost:3000
-- **Backend API**: http://localhost:8000/api/
-- **Admin Panel**: http://localhost:8000/admin/
-
-## Vulnerability Scanning / Dependency Check
-
-A `dependency-check-suppression.xml` file is included in the root directory. If you perform software composition analysis (SCA) on this project using the OWASP Dependency-Check tool, be sure to reference this suppression file to ignore known false positives.
+- **XSS Protection**: User-facing HTML is sanitized via vendored DOMPurify 3.3.3
+- **CSRF**: All mutating API calls include the `X-CSRFToken` header from the CSRF cookie
+- **Content Security Policy**: Enforced via `<meta>` tag in `index.html`
+- **Evidence Files**: Served through a Django view with authentication checks, not directly from the filesystem
+- **URL Sanitization**: All external URLs are validated to `http:`/`https:` protocols only

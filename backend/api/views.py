@@ -380,9 +380,12 @@ class EvidenceViewSet(viewsets.ModelViewSet):
 @login_required
 def serve_evidence(request, path):
     user = request.user
-    # The 'path' argument matches the generated FileField relative path: 'evidence/YYYY/MM/DD/uuid.ext'
-    # Wait, Django FileField passes 'path' via URL. URL is '/media/evidence/...' so 'path' will just be 'evidence/...'
-    evidence = Evidence.objects.filter(file=path).first()
+    # The URL pattern 'media/evidence/<path>' captures everything after 'media/evidence/',
+    # but the FileField stores the path relative to MEDIA_ROOT as 'evidence/YYYY/MM/DD/uuid.ext'.
+    # Use forward slashes for the DB lookup (Django always stores with /) 
+    # and os.path.join for the actual filesystem path.
+    file_field_path = 'evidence/' + path
+    evidence = Evidence.objects.filter(file=file_field_path).first()
     if not evidence:
         raise Http404("Evidence not found")
 
@@ -395,7 +398,7 @@ def serve_evidence(request, path):
     if not has_access:
         raise Http404("Evidence not found")
 
-    file_path = os.path.join(settings.MEDIA_ROOT, path)
+    file_path = os.path.join(settings.MEDIA_ROOT, *file_field_path.split('/'))
     if os.path.exists(file_path):
         return FileResponse(open(file_path, 'rb'))
     raise Http404("File not found on disk")
