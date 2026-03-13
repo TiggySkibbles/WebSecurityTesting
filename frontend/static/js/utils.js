@@ -39,7 +39,9 @@ export function el(tag, attrs = {}, ...children) {
         } else if (key === 'htmlFor') {
             element.setAttribute('for', value);
         } else if (key === 'innerHTML') {
-            element.innerHTML = value;
+            // Intentionally blocked — use textContent or child nodes instead
+            console.warn('innerHTML attr blocked in el() helper — use DOM children instead');
+            continue;
         } else if (value === true) {
             element.setAttribute(key, '');
         } else if (value !== false && value != null) {
@@ -102,9 +104,26 @@ export function icon(name, size = 18, color = null) {
         console.warn(`Icon "${name}" not found`);
         return document.createTextNode('');
     }
+
+    // Coerce size to a safe integer to prevent attribute injection
+    const safeSize = parseInt(size, 10) || 18;
+
     const span = document.createElement('span');
     span.className = 'icon';
     if (color) span.style.color = color;
-    span.innerHTML = `<svg width="${size}" height="${size}" viewBox="0 0 24 24">${paths}</svg>`;
+
+    // Use DOMParser to safely parse the SVG markup from our static dictionary
+    // instead of innerHTML, which could be an XSS vector if inputs were ever tainted.
+    const svgMarkup = `<svg xmlns="http://www.w3.org/2000/svg" width="${safeSize}" height="${safeSize}" viewBox="0 0 24 24">${paths}</svg>`;
+    const doc = new DOMParser().parseFromString(svgMarkup, 'image/svg+xml');
+    const svg = doc.documentElement;
+
+    // Check for parse errors (DOMParser returns a parsererror element on failure)
+    if (svg.querySelector('parsererror')) {
+        console.warn(`Icon "${name}" failed to parse`);
+        return document.createTextNode('');
+    }
+
+    span.appendChild(document.importNode(svg, true));
     return span;
 }
