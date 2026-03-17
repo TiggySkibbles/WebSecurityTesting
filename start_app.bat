@@ -16,5 +16,8 @@ cd backend
 call .\.venv\Scripts\activate
 python manage.py collectstatic --noinput 2>nul
 
+:: Load WSTG checklist data (idempotent)
+python manage.py load_wstg_checklist
+
 :: Start Backend
 python manage.py runserver

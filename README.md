@@ -58,6 +58,12 @@ Apply database migrations:
 python manage.py migrate
 ```
 
+Load the WSTG checklist data (requires internet access):
+```bash
+python manage.py load_wstg_checklist
+```
+> **Note:** This step fetches the OWASP WSTG v4.2 checklist from GitHub and seeds the database with testing categories and steps. Without it, new assessments will have no testing steps.
+
 Collect static files (frontend assets + Django admin):
 ```bash
 python manage.py collectstatic --noinput
@@ -94,24 +100,7 @@ The application will be available at:
 - **API**: http://localhost:8000/api/
 - **Admin Panel**: http://localhost:8000/admin/
 
-### Docker Quickstart (Untested)
 
-Ensure you have Docker Desktop (Windows/Mac) or Docker Engine and Compose installed.
-
-From the root directory, simply run:
-```bash
-docker compose up -d --build
-```
-
-The application will be available at:
-- **Application**: http://localhost:8000
-- **API**: http://localhost:8000/api/
-- **Admin Panel**: http://localhost:8000/admin/
-
-To stop the containers:
-```bash
-docker compose down
-```
 
 ## Project Structure
 
@@ -136,7 +125,6 @@ wstg_webapp/
 │           └── purify.min.js  # DOMPurify 3.3.3 (vendored)
 ├── frontend-old/             # Archived React/Vite frontend (reference only)
 ├── start_app.bat             # Windows startup script
-├── docker-compose.yml
 └── setup_env.py
 ```
 
