@@ -58,11 +58,11 @@ Apply database migrations:
 python manage.py migrate
 ```
 
-Load the WSTG checklist data (requires internet access):
+Load the WSTG checklist data:
 ```bash
 python manage.py load_wstg_checklist
 ```
-> **Note:** This step fetches the OWASP WSTG v4.2 checklist from GitHub and seeds the database with testing categories and steps. Without it, new assessments will have no testing steps.
+> **Note:** This seeds the database with OWASP WSTG v4.2 testing categories and steps from a bundled data file. Without it, new assessments will have no testing steps.
 
 Collect static files (frontend assets + Django admin):
 ```bash
