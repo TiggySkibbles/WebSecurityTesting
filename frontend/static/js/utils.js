@@ -8,7 +8,8 @@ export function getSafeUrl(url, fallback = '#') {
     try {
         const parsed = new URL(url, window.location.origin);
         if (['http:', 'https:'].includes(parsed.protocol)) {
-            return url;
+            // Return the normalized string strictly evaluated by the parser
+            return parsed.href;
         }
         return fallback;
     } catch (e) {

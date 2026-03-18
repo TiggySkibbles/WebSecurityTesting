@@ -158,7 +158,9 @@ class ProjectViewSet(viewsets.ModelViewSet):
                         {
                             'description': ev.description,
                             'filename': ev.original_filename or os.path.basename(ev.file.path),
-                            'zip_path': f"{cat.ref_id}/{test.ref_id.split('-')[-1]}/{ev.original_filename or os.path.basename(ev.file.path)}"
+                            'zip_path': f"{cat.ref_id}/{test.ref_id.split('-')[-1]}/{ev.original_filename or os.path.basename(ev.file.path)}",
+                            'file_path': ev.file.path,
+                            'is_image': ev.file.name.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp'))
                         } for ev in ex.evidence.all() if ev.file and os.path.exists(ev.file.path)
                     ]
                 })
@@ -199,14 +201,18 @@ class ProjectViewSet(viewsets.ModelViewSet):
     def export_json(self, request, pk=None):
         project = self.get_object()
         data = self._get_export_data(project)
-        return JsonResponse(data, json_dumps_params={'indent': 2})
+        response = JsonResponse(data, json_dumps_params={'indent': 2})
+        response['Content-Disposition'] = f'attachment; filename="{project.name.replace(" ", "_")}_Report.json"'
+        return response
 
     @action(detail=True, methods=['get'])
     def export_html(self, request, pk=None):
         project = self.get_object()
         data = self._get_export_data(project)
         html_string = render_to_string('export/report.html', {'report': data})
-        return HttpResponse(html_string, content_type='text/html')
+        response = HttpResponse(html_string, content_type='text/html')
+        response['Content-Disposition'] = f'attachment; filename="{project.name.replace(" ", "_")}_Report.html"'
+        return response
 
     @action(detail=True, methods=['get'])
     def export_pdf(self, request, pk=None):
@@ -221,7 +227,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         pdf = pisa.pisaDocument(io.BytesIO(html_string.encode("UTF-8")), result_bytes)
         
         if not pdf.err:
-            response = HttpResponse(result_bytes.getvalue(), content_type='application/pdf')
+            response = HttpResponse(result_bytes.getvalue(), content_type='application/octet-stream')
             response['Content-Disposition'] = f'attachment; filename="vulnerability_report_{project.id}.pdf"'
             return response
         return JsonResponse({'error': 'Failed to generate PDF.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -10,24 +10,8 @@ export function showExportModal(projectId, projectName, onClose) {
     async function handleDownload(format) {
         downloading = true;
         try {
-            const response = await api.get(`projects/${projectId}/export_${format}/`, { responseType: 'blob' });
-
-            const url = window.URL.createObjectURL(response.data);
-            const link = document.createElement('a');
-            link.href = url;
-
-            let ext = format;
-            if (format === 'bundle') ext = 'zip';
-
-            const filename = format === 'bundle'
-                ? `${projectName}_Full_Bundle.${ext}`
-                : `${projectName}_Report.${ext}`;
-
-            link.setAttribute('download', filename);
-            document.body.appendChild(link);
-            link.click();
-            link.parentNode.removeChild(link);
-            window.URL.revokeObjectURL(url);
+            const url = `/api/projects/${projectId}/export_${format}/`;
+            window.location.href = url;
         } catch (error) {
             console.error(`Export failed for ${format}`, error);
             alert('Failed to export report.');

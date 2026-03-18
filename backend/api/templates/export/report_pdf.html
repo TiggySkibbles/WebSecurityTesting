@@ -11,10 +11,23 @@
         .finding { margin-bottom: 2rem; page-break-inside: avoid; }
         .finding-title { font-weight: bold; font-size: 1.2rem; color: #da3633; }
         .notes { background: #fff; padding: 1rem; border: 1px solid #e1e4e8; white-space: pre-wrap; margin-top: 0.5rem; }
-        @page { size: A4; margin: 2cm; @bottom-right { content: "Page " counter(page) " of " counter(pages); } }
+        @page {
+            size: a4 portrait;
+            margin: 2cm;
+            @frame footer {
+                -pdf-frame-content: footer_content;
+                bottom: 1cm;
+                margin-left: 2cm;
+                margin-right: 2cm;
+                height: 1cm;
+            }
+        }
     </style>
 </head>
 <body>
+    <div id="footer_content" style="text-align: right; color: #57606a; font-size: 0.8rem;">
+        Page <pdf:pagenumber> of <pdf:pagecount>
+    </div>
     <div class="metadata">
         <h1>Web Application Test Report</h1>
         <p style="font-size: 1.5rem; margin-top: 0.5rem; color: #57606a;">{{ report.project_name }}</p>
@@ -59,6 +72,26 @@
             <div class="finding">
                 <div class="finding-title">{{ test.ref_id }}: {{ test.name }}</div>
                 <div class="notes">{{ test.notes }}</div>
+                
+                {% if test.evidence %}
+                <div style="margin-top: 1rem;">
+                    <strong>Evidence:</strong>
+                    <ul style="list-style: none; padding-left: 0; margin-top: 0.5rem;">
+                        {% for ev in test.evidence %}
+                        <li style="margin-bottom: 1rem; border: 1px solid #eee; padding: 0.5rem;">
+                            <div style="margin-bottom: 0.5rem;"><strong>{{ ev.description }}</strong> ({{ ev.filename }})</div>
+                            {% if ev.is_image %}
+                            <div style="text-align: center;">
+                                <img src="{{ ev.file_path }}" style="max-width: 100%; max-height: 500px;" />
+                            </div>
+                            {% else %}
+                            <div><em>[Attached file not translatable to PDF view]</em></div>
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
             </div>
             {% endfor %}
         </div>
